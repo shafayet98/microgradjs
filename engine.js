@@ -76,6 +76,13 @@ class Value{
     }
 }
 
+// to handle situation like (2).mul(a) ## handle reverse-multiplication
+Number.prototype.mul = function (value) {
+    if (value instanceof Value) {
+        return new Value(this * value.data);
+    }
+}
+
 let x1 = new Value(2.0);
 let x2 = new Value(0.0);
 
@@ -95,8 +102,8 @@ let o = n.tanh();
 o.grad = 1.0;
 o.backward();
 
-// let a = new Value(2.3);
-// let c = a.mul(0.0);
+// let a = new Value(2.0);
+// let c = (2).mul(a);
 // console.log(c);
 
 
