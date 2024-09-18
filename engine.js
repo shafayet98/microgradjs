@@ -13,6 +13,9 @@ class Value{
     }
 
     add(other){
+        if (other instanceof(Value) == false){
+            other = new Value(other);
+        }
         const out = new Value(this.data + other.data, [this, other], '+');
 
         this._backward = () =>{
@@ -24,6 +27,9 @@ class Value{
     }
 
     mul(other){
+        if (other instanceof(Value) == false){
+            other = new Value(other);
+        }
         const out = new Value(this.data * other.data, [this, other], '*');
 
         this._backward = () =>{
@@ -88,3 +94,11 @@ let o = n.tanh();
 
 o.grad = 1.0;
 o.backward();
+
+// let a = new Value(2.3);
+// let c = a.mul(0.0);
+// console.log(c);
+
+
+
+
