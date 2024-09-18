@@ -18,7 +18,7 @@ class Value{
         }
         const out = new Value(this.data + other.data, [this, other], '+');
 
-        this._backward = () =>{
+        out._backward = () =>{
             this.grad += 1 * out.grad;
             other.grad += 1 * out.grad;
             
@@ -26,25 +26,76 @@ class Value{
         return out;
     }
 
+    pow(other){
+        if (other instanceof(Value) == false){
+            other = new Value(other);
+        }
+
+        const out = new Value(this.data ** other.data, [this], `**${other}`);
+        
+
+        out._backward = () =>{
+            this.grad += (other * this.data ** (other - 1)) * out.grad;
+        }
+        
+        return out;
+    }
+
+    
+
     mul(other){
         if (other instanceof(Value) == false){
             other = new Value(other);
         }
         const out = new Value(this.data * other.data, [this, other], '*');
 
-        this._backward = () =>{
+        out._backward = () =>{
             this.grad += other.data * out.grad;
             other.grad += this.data * out.grad;
         }
         return out;
     }
 
+    div(other){
+        if (other instanceof(Value) == false){
+            other = new Value(other);
+        }
+        return this.mul(other.pow(-1));
+    }
+
+    neg(){
+        const out = this.mul(-1);
+        return out;
+    }
+
+    sub(other){
+        if (other instanceof(Value) == false){
+            other = new Value(other);
+        }
+
+        const out = this.add(other.neg());
+        return out;
+    }
+
+    exp(){
+        const x = this.data;
+        const out = new Value(Math.exp(x), [this], 'exp');
+
+        out._backward = () =>{
+            this.grad += out.data * out.grad;
+        }
+
+        return out;
+
+    }
+
+
     tanh(){
         const x = this.data;
         const t = (Math.exp(2*x) -1 ) / (Math.exp(2*x) +1);
         const out = new Value(t, [this], 'tanh');
 
-        this._backward = () =>{
+        out._backward = () =>{
             this.grad += (1-t**2) * out.grad;
         }
 
@@ -83,6 +134,13 @@ Number.prototype.mul = function (value) {
     }
 }
 
+// to handle situation like (2).div(a) ## handle reverse-division
+Number.prototype.div = function (value) {
+    if (value instanceof Value) {
+        return new Value(this).div(value);
+    }
+}
+
 let x1 = new Value(2.0);
 let x2 = new Value(0.0);
 
@@ -100,12 +158,10 @@ let n = x1w1x2w2.add(b);
 let o = n.tanh();
 
 o.grad = 1.0;
-o.backward();
-
-// let a = new Value(2.0);
-// let c = (2).mul(a);
-// console.log(c);
+// o.backward();
 
 
+p = new Value(4);
+q = new Value(10);
 
-
+console.log(p.sub(q));

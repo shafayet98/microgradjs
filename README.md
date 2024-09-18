@@ -29,13 +29,13 @@ output: backpropagation
 ```
 Node: 0.7064193203972352 grad: 1
 Node: 0.8799999999999999 grad: 0.5009717437695084
-Node: 6.88 grad: 0
+Node: 6.88 grad: 0.5009717437695084
 Node: -6 grad: 0.5009717437695084
-Node: 0 grad: 0
+Node: 0 grad: 0.5009717437695084
 Node: 1 grad: 0
-Node: 0 grad: 0
+Node: 0 grad: 0.5009717437695084
 Node: -6 grad: 0.5009717437695084
-Node: -3 grad: 0
+Node: -3 grad: 1.0019434875390167
 Node: 2 grad: -1.502915231308525
 ```
 
