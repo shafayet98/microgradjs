@@ -6,6 +6,7 @@ class Value {
         this.grad = 0.0;
         this._backward = () => { };
         this.op = op;
+        this.label = '';
     }
 
     toString() {
@@ -17,6 +18,7 @@ class Value {
             other = new Value(other);
         }
         const out = new Value(this.data + other.data, [this, other], '+');
+        out.label = `(${this.label} + ${other.label})`;
 
         out._backward = () => {
             this.grad += 1 * out.grad;
@@ -31,6 +33,7 @@ class Value {
         }
 
         const out = new Value(this.data ** other.data, [this, other], `**`);
+        out.label = `(${this.label} ** ${other.label})`;
 
         out._backward = () => {
             this.grad += (other.data * this.data ** (other.data - 1)) * out.grad;
@@ -44,6 +47,7 @@ class Value {
             other = new Value(other);
         }
         const out = new Value(this.data * other.data, [this, other], '*');
+        out.label = `(${this.label} * ${other.label})`;
 
         out._backward = () => {
             this.grad += other.data * out.grad;
@@ -61,6 +65,7 @@ class Value {
 
     neg() {
         const out = this.mul(-1);
+        out.label = `-(${this.label})`;
         return out;
     }
 
@@ -75,6 +80,7 @@ class Value {
     exp() {
         const x = this.data;
         const out = new Value(Math.exp(x), [this], 'exp');
+        out.label = `exp(${this.label})`;
 
         out._backward = () => {
             this.grad += out.data * out.grad;
@@ -141,27 +147,23 @@ Number.prototype.div = function (value) {
 }
 
 // Example case
-let x1 = new Value(2.0);
-let x2 = new Value(0.0);
+let x1 = new Value(2.0); x1.label = 'x1';
+let x2 = new Value(0.0); x2.label = 'x2';
 
-let w1 = new Value(-3.0);
-let w2 = new Value(1.0);
+let w1 = new Value(-3.0); w1.label = 'w1';
+let w2 = new Value(1.0); w2.label = 'w2';
 
-let b = new Value(6.88);
+let b = new Value(6.88); b.label = 'b';
 
-let x1w1 = x1.mul(w1);
-let x2w2 = x2.mul(w2);
+let x1w1 = x1.mul(w1); x1w1.label = 'x1w1';
+let x2w2 = x2.mul(w2); x2w2.label = 'x2w2';
 
-let x1w1x2w2 = x1w1.add(x2w2);
-let n = x1w1x2w2.add(b);
+let x1w1x2w2 = x1w1.add(x2w2); x1w1x2w2.label='x1w1x2w2';
+let n = x1w1x2w2.add(b); n.label = 'n';
 
-let e = ((2).mul(n)).exp();
-let o = (e.sub(1)).div(e.add(1));
+let e = ((2).mul(n)).exp(); e.label = 'e';
+let o = (e.sub(1)).div(e.add(1)); o.label = 'o';
 
 o.backward();
 
-console.log("------sep--------")
-console.log(x1.grad);
-console.log(x2.grad);
-console.log(w1.grad);
-console.log(w2.grad);
+
